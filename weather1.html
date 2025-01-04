@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather App</title>
+    <style>
+        body {
+            background: #8C52FF;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+        #weather-container {
+            background: rgba(255, 255, 255, 0.3);
+            max-width: 400px;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+        }
+        h2, label, p {
+            color: #fff;
+            margin: 8px 0;
+        }
+        input {
+            width: calc(100% - 16px);
+            padding: 8px;
+            box-sizing: border-box;
+            border-radius: 10px;
+            border: 1px solid white;
+            margin-top: 20px;
+        }
+        button {
+            background: #debff4;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            margin-top: 20px;
+            width: 100px;
+            font-size: 15px;
+        }
+        button:hover {
+            background: #8b48d7;
+        }
+        #temp-div p {
+            font-size: 60px;
+            margin-top: -30px;
+        }
+        #weather-icon {
+            width: 200px;
+            height: 200px;
+            margin: 0 auto 10px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div id="weather-container">
+        <h2>Weather App</h2>
+        <input type="text" id="city" placeholder="Enter City">
+        <button onclick="getWeather()">Search</button>
+        <img id="weather-icon" alt="Weather Icon">
+        <div id="temp-div"></div>
+        <div id="weather-info"></div>
+    </div>
+    <script>
+        function getWeather() {
+            var city = document.getElementById("city").value.trim();
+            if (!city) {
+                alert("Please enter a city name.");
+                return;
+            }
+
+            var apiKey = "fbed14a00acfddf9edfc2cc3b8299751"; // Your OpenWeatherMap API key
+            var weatherUrl = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`;
+
+            var xhr = new XMLHttpRequest();
+            xhr.open("GET", weatherUrl, true);
+
+            xhr.onload = function () {
+                if (xhr.status === 200) {
+                    try {
+                        var data = JSON.parse(xhr.responseText);
+                        document.getElementById("temp-div").innerHTML = `Temperature: ${data.main.temp}°C`;
+                        document.getElementById("weather-info").innerHTML = `Weather: ${data.weather[0].description}`;
+                        var iconCode = data.weather[0].icon;
+                        var iconUrl = `https://openweathermap.org/img/wn/${iconCode}@2x.png`;
+                        document.getElementById("weather-icon").src = iconUrl;
+                        document.getElementById("weather-icon").style.display = "block";
+                    } catch (e) {
+                        alert("Error processing data. Please try again.");
+                    }
+                } else if (xhr.status === 404) {
+                    alert("City not found. Please try another.");
+                } else {
+                    alert("Error fetching weather data. Please try again later.");
+                }
+            };
+
+            xhr.onerror = function () {
+                alert("An error occurred during the request. Please check your connection and try again.");
+            };
+
+            xhr.send();
+        }
+    </script>
+</body>
+</html>
